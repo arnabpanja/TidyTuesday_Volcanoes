@@ -124,6 +124,67 @@ ggplot() +
          size = guide_legend(title = "Eruption Duration"))
 
 
+# Events analysis by Volcano Explosivity Index
+
+# Top 20 Events by counts
+tbl_frequent_events <- events %>% 
+  count(event_type) %>% 
+  mutate(rown = row_number(desc(n))) %>% 
+  filter(rown <= 20)
+
+tbl_events_smaller <- inner_join(events, tbl_frequent_events, by = "event_type")
+
+tbl_eruption_events <- inner_join(tbl_eruptions, tbl_events_smaller, by = c("volcano_number", "eruption_number")) %>%
+  select(
+    volcano_number, 
+    volcano_name = volcano_name.x, 
+    eruption_number, 
+    eruption_category, 
+    Vei = Vei, 
+    start_date,
+    end_date, 
+    Duration, 
+    longitude, 
+    latitude, 
+    event_number, 
+    event_type, 
+    event_remarks, 
+    event_date_year, 
+    event_date_month, 
+    event_date_day
+  )
+
+# Event Type Vs Volcano Explosivity Index
+# geom count plot 
+
+tbl_eruption_events %>% filter(as.numeric(Vei) > 0) %>%
+  count(Vei, event_type) %>% 
+  ggplot(mapping = aes(x = Vei, y = event_type)) + 
+  geom_count(mapping = aes(size = n, color = n), stat = "identity", show.legend = TRUE) + 
+  scale_color_viridis_c() + 
+  dark_theme_minimal() + 
+  labs(
+    x = "Volcano Explosivity Index", 
+    y = "Event Type", 
+    title = "Event Type Vs Volcano Explosivity Index", 
+    caption = "Tidy Tuesday - Volcano Eruptions"
+  )
+
+
+# Event Type Vs Volcano Explosivity Index
+# geom tile plot 
+
+tbl_eruption_events %>% filter(as.numeric(Vei) > 0) %>%
+  count(Vei, event_type) %>% 
+  ggplot(mapping = aes(x = Vei, y = event_type)) + 
+  geom_tile(mapping = aes(fill = n), stat = "identity", show.legend = TRUE) + 
+  scale_fill_viridis_c() + dark_theme_minimal() + 
+  labs(
+    x = "Volcano Explosivity Index", 
+    y = "Event Type", 
+    title = "Event Type Vs Volcano Explosivity Index", 
+    caption = "Tidy Tuesday - Volcano Eruptions"
+  )
 
 
   
