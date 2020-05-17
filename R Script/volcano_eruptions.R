@@ -103,6 +103,9 @@ tbl_eruptions <- eruptions %>% filter(
 
 world <- map_data("world")
 
+#Adding a little bit of jiiter 
+#to remove too much of overlapping in the plot 
+
 ggplot() + 
   geom_map(data = world, 
            map = world, 
@@ -110,13 +113,17 @@ ggplot() +
            color = "black", 
            fill = "lightgray", 
            size = 0.1) + 
-  geom_point(data = tbl_eruptions, 
-             mapping = aes(longitude, latitude, color = Vei, size = Duration), 
+  geom_jitter(data = tbl_eruptions, 
+             mapping = aes(longitude, latitude, color = Vei, size = Duration),
+             width = 3,
+             height = 3, 
              show.legend = TRUE) + 
   theme_void() +
   labs(title = "Volcanic Eruptions") + 
   guides(color = guide_legend(title = "VEI"), 
          size = guide_legend(title = "Eruption Duration"))
+
+
 
 
   
